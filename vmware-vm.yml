@@ -1,0 +1,146 @@
+#
+#  Copyright © 2023 Accenture. All rights reserved.
+#
+#  Authors
+#  - Fabio Tezedor  <fabio.tezedor@accenture.com>
+#  - Fabio Rosa     <fabio.aurelio.q.rosa@accenture.com>
+#  - Ramon Maia     <ramon.maia@accenture.com>
+#  - Johnny Menezes <johnny.dias.menezes@accenture.com>
+#
+#  Comments
+#    This script is intended to be used by Backstage solely
+#
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  namespace: default
+  name: vmware-vm
+  title: Criação de VM on premises em VMware ESXi
+  description: >
+    Criação de VM on premises em VMware ESXi
+  tags:
+    - vm
+    - vmware
+    - telefonica
+  links:
+    - url: https://www.telefonica.com.br/
+      title: Telefonica
+      icon: dashboard
+      type: admin-dashboard
+spec:
+  owner: group:infrastructure
+  type: resource
+
+  parameters:
+  - title: Informacões sobre o solicitante
+    required:
+      - nome
+      - email
+    properties:
+      nome:
+        title: Nome do líder técnico da área*
+        type: string
+        description: Insira o nome do líder técnico.
+        ui:autofocus: true
+      email:
+        title: E-mail do líder técnico*
+        type: string
+        description: Insira o nome do líder técnico.
+        ui:autofocus: true
+
+  - title: Nome da máquina
+    required:
+      - hostname
+    properties:
+      hostname:
+        title: Hostname
+        type: string
+        description: Insira o nome da máquina
+        ui:autofocus: true
+
+  - title: Quantidade de núcleos
+    properties:
+      cores:
+        title: Núcleos
+        type: string
+        description: Número de núcleos
+        default: 2
+        enum:
+          - 2
+          - 4
+          - 8
+        enumNames:
+          - 2
+          - 4
+          - 8
+
+  - title: Quantidade de RAM
+    properties:
+      ram:
+        title: RAM
+        type: string
+        description: Memória RAM (GB)
+        default: 2
+        enum:
+          - 1
+          - 2
+          - 4
+        enumNames:
+          - 1
+          - 2
+          - 4
+
+  - title: Tamanho de disco
+    properties:
+      disk:
+        title: Espaço em disco
+        type: string
+        description: Espaço em disco (GB)
+        default: 10
+        enum:
+          - 10
+          - 20
+          - 40
+        enumNames:
+          - 10
+          - 20
+          - 40
+
+  steps:
+    - id: step2
+      name: Log message
+      action: debug:log
+      
+    - id: fetch
+      name: Fetch Terraform Templates
+      action: fetch:template
+      input:
+        url: .
+        values:
+          email: ${{ parameters.email }}
+          hostname: ${{ parameters.hostname }}
+          cores: ${{ parameters.cores }}
+          ram: ${{ parameters.ram }}
+          disk: ${{ parameters.disk }}          
+        copyWithoutTemplating:
+          - .github/workflows/*
+          - vmware-vm.yml
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts:
+          - github.com
+        description: This is ${{ parameters.hostname }}
+        repoUrl: github.com?owner=pocacc&repo=${{ parameters.hostname }}
+        RepoVisibility: public
+        branchName: main
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
