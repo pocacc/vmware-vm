@@ -62,7 +62,7 @@ spec:
     properties:
       cores:
         title: Núcleos
-        type: string
+        type: number
         description: Número de núcleos
         default: 2
         enum:
@@ -78,7 +78,7 @@ spec:
     properties:
       ram:
         title: RAM
-        type: string
+        type: number
         description: Memória RAM (GB)
         default: 2
         enum:
@@ -94,7 +94,7 @@ spec:
     properties:
       disk:
         title: Espaço em disco
-        type: string
+        type: number
         description: Espaço em disco (GB)
         default: 10
         enum:
