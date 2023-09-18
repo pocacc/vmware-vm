@@ -79,16 +79,16 @@ spec:
       ram:
         title: RAM
         type: number
-        description: Memória RAM (GB)
+        description: Memória RAM (MB)
         default: 2
         enum:
-          - 1
-          - 2
-          - 4
+          - 1024
+          - 2048
+          - 4096
         enumNames:
-          - 1
-          - 2
-          - 4
+          - 1024
+          - 2048
+          - 4096
 
   - title: Tamanho de disco
     properties:
